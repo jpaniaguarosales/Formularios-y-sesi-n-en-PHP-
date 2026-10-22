@@ -1,4 +1,11 @@
 <?php 
+
+/* 
+El Se utiliza POST para que el usuario y la contraseña no aparezcan en la URL
+ni visibles en el historial del navegador o enlaces compartidos 
+POST no cifra los datos por si solos, para rpotegerlos durante el envío
+necesita el protocolo HTTPS 
+*/
 session_start();
 
 if (!isset($_SESSION["usuario"]) || empty($_SESSION["usuario"])) {
@@ -12,11 +19,32 @@ if (!isset($_SESSION["usuario"]) || empty($_SESSION["usuario"])) {
 <?php
 $productos = [
     "A" => ["nombre" => "Café solo", "precio" => 1.20],
-    "B" => ["nombe" => "Café con leche", "precio" => 1.50],
+    "B" => ["nomrbe" => "Café con leche", "precio" => 1.50],
     "C" => ["nombre" => "Bocadillo", "precio" => 2.80], 
     "D" => ["nombre" => "Agua", "precio" => 1.00]
-]
+];
 
+$mensaje = ""; 
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+
+    $codigo = $_POST["codigo"] ?? ""; 
+    $unidades = $_POST["unidades"] ?? ""; 
+
+    if (!isset($productos[$codigo]))  {
+        $mensaje = "Introduce código correcto"; 
+    } elseif ($unidades < 1) {
+        $mensaje = "Introduce unidades"; 
+    } else {
+        // Producto e importe (donde me he liado)
+        $prod = $productos[$codigo]; 
+        $total = $prod["precio"] * $unidades; 
+
+        $mensaje = "Pedido: " . htmlspecialchars($prod["nombre"]) . 
+                "<br>Unidades: " . $unidades . 
+                "<br>Precio " . number_format($total, 2, ",", ".") . " €"; 
+    }
+} 
 ?>
 
 <!DOCTYPE html>
@@ -32,11 +60,11 @@ $productos = [
     <hr>
 
     <form method="post" action="">
-        <label for="codigo">
+        <label>
             Código:
             <input type="text" name="codigo">
         </label>
-        <label for="unidades">
+        <label>
             Unidades:
             <input type="number" name="unidades">
         </label>
@@ -45,17 +73,12 @@ $productos = [
 
     <hr>
     <?php 
+        if($mensaje != "") {
+            echo "<p class='mensaje'>" . $mensaje . "<p>"; 
+        }
     
-    if (!isset($_POST["codigo"]) || empty($_POST["codigo"]) || $_POST["unidades"] < 1) {
-        echo "<p>Ingresa código correcto o cantidad de unidades correcta</p>"; 
-    } else {
-        $codigo = $_POST["codigo"]; 
-        $unidades = $_POST["unidades"]; 
-        $prod = $productos[$codigo] ;
-    
-        echo "Pedido: <br>" . $prod["nombre"] . "<br>Precio " . $prod["precio"];
-    }
     ?>
-    
+
+    <p><a href="logout.php">Cerar sesión</a></p>    
 </body>
 </html>

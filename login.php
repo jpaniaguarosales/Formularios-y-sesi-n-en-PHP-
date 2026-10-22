@@ -28,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
@@ -50,8 +50,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             Clave:
             <input type="password" name="clave">
         </label>
-        <input type="submit">
+        <input type="submit" value="Iniciar sesion">
     </form>
+
+    <?php 
+    if ($mensaje != "") {
+        echo "<p class='mensaje'>" . htmlspecialchars($mensaje) . "</p>"; 
+    }
+    ?>
 
 
 </body>
